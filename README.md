@@ -1,4 +1,4 @@
-Promise-mysql
+Promise-mysql2
 ==================
 [![Build Status](https://travis-ci.org/lukeb-uk/node-promise-mysql.svg?style=flat&branch=master)](https://travis-ci.org/lukeb-uk/node-promise-mysql?branch=master)
 
