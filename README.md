@@ -2,15 +2,17 @@ Promise-mysql
 ==================
 [![Build Status](https://travis-ci.org/lukeb-uk/node-promise-mysql.svg?style=flat&branch=master)](https://travis-ci.org/lukeb-uk/node-promise-mysql?branch=master)
 
-Promise-mysql is a wrapper for [mysqljs/mysql](https://github.com/mysqljs/mysql) that wraps function calls with [Bluebird](https://github.com/petkaantonov/bluebird/) promises. Usually this would be done with Bluebird's `.promisifyAll()` method, but mysqljs/mysql's footprint is different to that of what Bluebird expects.
+Promise-mysql2 is a wrapper for [mysqljs/mysql](https://github.com/mysqljs/mysql) that wraps function calls with  promises.
+
+node >= 8.0
 
 To install promise-mysql, use [npm](http://github.com/isaacs/npm):
 
 ```bash
-$ npm install promise-mysql
+$ npm install promise-mysql2
 ```
 
-Please refer to [mysqljs/mysql](https://github.com/mysqljs/mysql) for documentation on how to use the mysql functions and refer to [Bluebird](https://github.com/petkaantonov/bluebird/) for documentation on Bluebird's promises
+Please refer to [mysqljs/mysql](https://github.com/mysqljs/mysql) for documentation on how to use the mysql functions.
 
 At the minute only the standard connection (using `.createConnection()`) and the pool (using `.createPool()`) is supported. `createPoolCluster` is not implemented yet.
 
@@ -22,14 +24,14 @@ At the minute only the standard connection (using `.createConnection()`) and the
 
 To connect, you simply call `.createConnection()` like you would on mysqljs/mysql:
 ```javascript
-var mysql = require('promise-mysql');
+const mysql = require('promise-mysql2');
 
 mysql.createConnection({
-    host: 'localhost',
-    user: 'sauron',
-    password: 'theonetruering',
-    database: 'mordor'
-}).then(function(conn){
+	host: 'localhost',
+	user: 'dashaibi',
+	password: 'dashaibi',
+	database: 'dashaibi'
+}).then((conn) => {
     // do stuff with conn
     conn.end();
 });
@@ -37,70 +39,84 @@ mysql.createConnection({
 
 To use the promise, you call the methods as you would if you were just using mysqljs/mysql, minus the callback. You then add a .then() with your function in:
 ```javascript
-var mysql = require('promise-mysql');
+const mysql = require('promise-mysql2');
 
 mysql.createConnection({
-    host: 'localhost',
-    user: 'sauron',
-    password: 'theonetruering',
-    database: 'mordor'
-}).then(function(conn){
-    var result = conn.query('select `name` from hobbits');
-    conn.end();
-    return result;
-}).then(function(rows){
-    // Logs out a list of hobbits
-    console.log(rows);
+	host: 'localhost',
+	user: 'dashaibi',
+	password: 'dashaibi',
+	database: 'dashaibi'
+}).then((conn) => {
+	let result = conn.query('select `name` from user');
+	conn.end();
+	return result;
+}).then(([rows, fields]) => {
+	// list of user
+	console.log(rows);
 });
 ```
 
 You can even chain the promises, using a return within the .then():
 ```javascript
-var mysql = require('promise-mysql');
-var connection;
+const mysql = require('promise-mysql2');
+let connection;
 
 mysql.createConnection({
-    host: 'localhost',
-    user: 'sauron',
-    password: 'theonetruering',
-    database: 'mordor'
-}).then(function(conn){
-    connection = conn;
-    return connection.query('select `id` from hobbits where `name`="frodo"');
-}).then(function(rows){
-    // Query the items for a ring that Frodo owns.
-    var result = connection.query('select * from items where `owner`="' + rows[0].id + '" and `name`="ring"');
-    connection.end();
-    return result;
-}).then(function(rows){
-    // Logs out a ring that Frodo owns
-    console.log(rows);
+	host: 'localhost',
+	user: 'dashaibi',
+	password: 'dashaibi',
+	database: 'dashaibi'
+}).then((conn) => {
+	connection = conn;
+	return connection.query('select `id` from user where `name`="dashabi"');
+}).then(([rows, fields]) => {
+	// Query the items that dashabi owns.
+	let result = connection.query('select * from items where `owner`="' + rows[0].id + '" and `name`="dashabi"');
+	connection.end();
+	return result;
+}).then(([rows, fields]) => {
+	// Logs out that dashabi owns
+	console.log(rows);
 });
 ```
 
 You can catch errors using the .catch() method. You can still add .then() clauses, they'll just get skipped if there's an error
 ```javascript
-var mysql = require('promise-mysql');
-var connection;
+const mysql = require('promise-mysql2');
+let connection;
 
 mysql.createConnection({
-    host: 'localhost',
-    user: 'sauron',
-    password: 'theonetruering',
-    database: 'mordor'
-}).then(function(conn){
-    connection = conn;
-    return connection.query('select * from tablethatdoesnotexist');
-}).then(function(){
-    var result = connection.query('select * from hobbits');
-    connection.end();
-    return result;
-}).catch(function(error){
-    if (connection && connection.end) connection.end();
-    //logs out the error
-    console.log(error);
+	host: 'localhost',
+	user: 'dashaibi',
+	password: 'dashaibi',
+	database: 'dashaibi'
+}).then((conn) => {
+	connection = conn;
+	return connection.query('select * from tablethatdoesnotexist');
+}).then(() => {
+	let result = connection.query('select * from user');
+	connection.end();
+	return result;
+}).catch((error) => {
+	if (connection && connection.end) connection.end();
+	//logs out the error
+	console.log(error);
 });
 
+```
+
+To use the async/await, you call the methods as you would if you were just using mysqljs/mysql.
+```javascript
+const mysql = require('promise-mysql2');
+let connection = await mysql.createConnection({
+	host: 'localhost',
+	user: 'dashaibi',
+	password: 'dashaibi',
+	database: 'dashaibi'
+});
+const [rows, fields] = await connection.query('select `id` from user where `name`="dashabi"');
+connection.end();
+console.log(rows);
 ```
 
 ### Pool
@@ -109,15 +125,15 @@ Use pool directly:
 
 ```javascript
 pool = mysql.createPool({
-  host: 'localhost',
-  user: 'sauron',
-  password: 'theonetruering',
-  database: 'mordor',
+	host: 'localhost',
+	user: 'dashaibi',
+	password: 'dashaibi',
+	database: 'dashaibi'
   connectionLimit: 10
 });
 
-pool.query('select `name` from hobbits').then(function(rows){
-    // Logs out a list of hobbits
+pool.query('select `name` from user').then(([rows, fields]){
+    // Logs out a list of user
     console.log(rows);
 });
 
@@ -126,48 +142,35 @@ pool.query('select `name` from hobbits').then(function(rows){
 Get a connection from the pool:
 
 ```javascript
-pool.getConnection().then(function(connection) {
-    connection.query('select `name` from hobbits').then(...)
-}).catch(function(err) {
-    done(err);
+let conn;
+pool.getConnection().then((connection) => {
+	conn = connection;
+	conn.query('select `name` from user').then(...);
+	conn.release();
+}).catch((err) => {
+	conn.release();
+	done(err);
 });
 ```
 
-#### Using/Disposer Pattern with Pool
-Example implementing a using/disposer pattern using Bluebird's built-in `using` and `disposer` functions.
-
-databaseConnection.js:
+To use the async/await, you call the methods as you would if you were just using mysqljs/mysql.
 ```javascript
-var mysql = require('promise-mysql');
-
-pool = mysql.createPool({
-  host: 'localhost',
-  user: 'sauron',
-  password: 'theonetruering',
-  database: 'mordor',
+const pool = mysql.createPool({
+	host: 'localhost',
+	user: 'dashaibi',
+	password: 'dashaibi',
+	database: 'dashaibi'
   connectionLimit: 10
 });
 
-function getSqlConnection() {
-  return pool.getConnection().disposer(function(connection) {
-    pool.releaseConnection(connection);
-  });
-}
+const [rows, fields] = await pool.query('select `name` from user');
+console.log(rows);
 
-module.exports = getSqlConnection;
-```
-
-sqlQuery.js:
-```javascript
-var Promise = require("bluebird");
-var getSqlConnection = require('./databaseConnection');
-Promise.using(getSqlConnection(), function(connection) {
-    return connection.query('select `name` from hobbits').then(function(rows) {
-      return console.log(rows);
-    }).catch(function(error) {
-      console.log(error);
-    });
-})
+// get connection from pool
+const conn = await pool.getConnection();
+const [rows, fields] = await connection.query('select `name` from user');
+conn.release();
+console.log(rows);
 ```
 
 
@@ -181,26 +184,3 @@ Start the test suite with
 ```bash
 DB_HOST=localhost DB_USER=user DB_PWD=pwd npm test
 ```
-
-## License
-
-The MIT License (MIT)
-
-Copyright (c) 2014 Luke Bonaccorsi
-
-Permission is hereby granted, free of charge, to any person obtaining a copy of
-this software and associated documentation files (the "Software"), to deal in
-the Software without restriction, including without limitation the rights to
-use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
-the Software, and to permit persons to whom the Software is furnished to do so,
-subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
-FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
-COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
-IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
-CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
