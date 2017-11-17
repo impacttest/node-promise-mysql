@@ -6,7 +6,7 @@ Promise-mysql2 is a wrapper for [mysqljs/mysql](https://github.com/mysqljs/mysql
 
 node >= 8.0
 
-To install promise-mysql, use [npm](http://github.com/isaacs/npm):
+To install promise-mysql2, use [npm](http://github.com/isaacs/npm):
 
 ```bash
 $ npm install promise-mysql2
