@@ -9,11 +9,8 @@ exports.createPool = config => new Pool(config);
 
 // Accepts a "raw" callback-based Connection or PoolConnection object from the "mysql" package and returns a
 // PoolConnection object from this package that wraps that object in a Promise-enabled interface.  The returned object
-// should just be used for compatibility with Promise-based code and not for managing database connection lifetime.
-exports.promisifyRawConnection = function promisifyRawConnection( rawDatabaseConnection )
-{
-    return new PoolConnection( rawDatabaseConnection );
-};
+// should just be used for temporary compatibility with Promise-based code and not for managing database connection lifetime.
+exports.promisifyRawConnection = rawDatabaseConnection => new PoolConnection( rawDatabaseConnection );
 
 exports.Types = mysql.Types;
 exports.escape = mysql.escape;
